@@ -46,6 +46,8 @@ class Enabler:
             self.OnEnable()
         elif self.lastEnabled and not self.enabled:
             self.OnDisable()
+        
+        self.lastEnabled = self.enabled
 
 class Input:
     def __init__(self, pin):
