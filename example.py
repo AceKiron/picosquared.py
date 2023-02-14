@@ -37,4 +37,4 @@ class MyApp(ps.Application):
         if self.enabler.IsEnabled():
             self.led.Toggle()
         
-MyApp().run()
+MyApp().Run()

@@ -94,23 +94,32 @@ class LED(Output):
     def __init__(self, pin):
         super().__init__(pin)
 
-class Keypad(Input):
-    def __init__(self, width, *pins):
+class Keypad4x4(Input):
+    Keys = ["1", "2", "3", "A",
+            "4", "5", "6", "B",
+            "7", "8", "9", "C",
+            "*", "0", "#", "D"]
+    
+    def __init__(self, keypad_rows, keypad_columns):
         super().__init__(None)
 
-        self.pins = []
-        for pin in pins:
-            self.pins.append(Pin(pin, Pin.IN))
+        self.row_pins = []
+        self.col_pins = []
         
-        self.width = width
+        for x in range(4):
+            self.row_pins.append(Pin(keypad_rows[x], Pin.OUT))
+            self.row_pins[x].value(1)
+            
+            self.col_pins.append(Pin(keypad_columns[x], Pin.IN, Pin.PULL_DOWN))
+            self.col_pins[x].value(0)
     
-    def Read(self, x, y):
-        return self.pins[y * self.width + x].value()
-    
-    def Print(self):
-        values = []
-        
-        for pin in self.pins:
-            values.append(pin.value())
-        
-        print(" ".join(values))
+    def Read(self):
+        for row in range(4):
+            self.row_pins[row].high()
+            
+            for col in range(4):
+                if self.col_pins[col].value() == 1:
+                    self.row_pins[row].low()
+                    return row * 4 + col
+                
+            self.row_pins[row].low()
