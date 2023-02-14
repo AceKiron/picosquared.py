@@ -16,7 +16,7 @@ class Application:
         while True:
             self.Update()
 
-            if self.sleepTime > 0:
+            if self.SleepTime > 0:
                 time.sleep(self.SleepTime)
 
 class Enabler:
