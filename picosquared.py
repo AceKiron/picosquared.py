@@ -1,24 +1,5 @@
 from machine import Pin
 
-class Application:
-    def __init__(self):
-        self.SleepTime = 0
-
-        self.Init()
-    
-    def Init(self):
-        pass
-    
-    def Update(self):
-        pass
-    
-    def Run(self):
-        while True:
-            self.Update()
-
-            if self.SleepTime > 0:
-                time.sleep(self.SleepTime)
-
 class Enabler:
     def __init__(self, lastEnabled=False, enabled=True):
         self.lastEnabled = lastEnabled
@@ -49,12 +30,40 @@ class Enabler:
         
         self.lastEnabled = self.enabled
 
+class Application:
+    def __init__(self):
+        self.SleepTime = 0
+
+        self.enabled = True
+
+        self.Init()
+    
+    def Init(self):
+        pass
+    
+    def Update(self):
+        pass
+    
+    def Stop(self):
+        self.enabled = False
+    
+    def Run(self):
+        while self.enabled:
+            self.Update()
+
+            if self.SleepTime > 0:
+                time.sleep(self.SleepTime)
+
 class Input:
     def __init__(self, pin):
-        self.pin = Pin(pin, Pin.IN)
+        if pin != None:
+            self.pin = Pin(pin, Pin.IN)
 
     def Read(self):
         return self.pin.value()
+    
+    def Print(self):
+        print(self.pin.value())
     
 class Output:
     def __init__(self, pin):
@@ -64,6 +73,9 @@ class Output:
     
     def Read(self):
         return self.pin.value()
+    
+    def Print(self):
+        print(self.pin.value())
     
     def Toggle(self):
         self.pin.toggle()
@@ -81,3 +93,24 @@ class Button(Input):
 class LED(Output):
     def __init__(self, pin):
         super().__init__(pin)
+
+class Keypad(Input):
+    def __init__(self, width, *pins):
+        super().__init__(None)
+
+        self.pins = []
+        for pin in pins:
+            self.pins.append(Pin(pin, Pin.IN))
+        
+        self.width = width
+    
+    def Read(self, x, y):
+        return self.pins[y * self.width + x].value()
+    
+    def Print(self):
+        values = []
+        
+        for pin in self.pins:
+            values.append(pin.value())
+        
+        print(" ".join(values))
